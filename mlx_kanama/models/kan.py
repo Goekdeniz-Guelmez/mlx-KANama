@@ -31,10 +31,33 @@ class KANLinear(nn.Module):
         self.scale_spline = scale_spline
         self.enable_standalone_scale_spline = enable_standalone_scale_spline
 
+        # Handle different types of activation functions
         if hidden_act is None:
             self.hidden_act = lambda x: x
+        elif isinstance(hidden_act, str):
+            # Map string names to activation functions
+            act_dict = {
+                'silu': nn.SiLU(),
+                'gelu': nn.GELU(),
+                'relu': nn.ReLU(),
+                'tanh': mx.tanh,
+                'sigmoid': mx.sigmoid,
+                'identity': lambda x: x,
+            }
+            if hidden_act.lower() in act_dict:
+                self.hidden_act = act_dict[hidden_act.lower()]
+            else:
+                raise ValueError(f"Unsupported activation function: {hidden_act}")
+        elif callable(hidden_act):
+            # If it's a class like nn.SiLU, instantiate it
+            try:
+                self.hidden_act = hidden_act()
+            except TypeError:
+                # If it's already a function, use it directly
+                self.hidden_act = hidden_act
         else:
-            self.hidden_act = hidden_act()
+            # Assume it's already an instantiated activation function
+            self.hidden_act = hidden_act
         
         self.grid_eps = grid_eps
         self.bias = bias
@@ -76,7 +99,7 @@ class KANLinear(nn.Module):
         next_grid_reshaped = self.grid[1:].T.reshape(1, self.in_features, -1)
         
         # Compute base splines
-        bases = mx.logical_and(x_expanded >= grid_reshaped, x_expanded < next_grid_reshaped).astype(mx.float32)
+        bases = mx.logical_and(x_expanded >= grid_reshaped, x_expanded < next_grid_reshaped).astype(mx.float16)
         
         # Pre-compute grid differences for efficiency
         for k in range(1, self.spline_order + 1):
@@ -147,7 +170,7 @@ class KANLinear(nn.Module):
         # Compute uniform grid
         x_min, x_max = x_sorted[0], x_sorted[-1]
         uniform_step = (x_max - x_min + 2 * margin) / self.grid_size
-        grid_uniform = mx.arange(self.grid_size + 1).reshape(-1, 1).astype(mx.float32) * uniform_step + x_min - margin
+        grid_uniform = mx.arange(self.grid_size + 1).reshape(-1, 1).astype(mx.float16) * uniform_step + x_min - margin
         
         # Blend grids
         grid = self.grid_eps * grid_uniform + (1 - self.grid_eps) * grid_adaptive

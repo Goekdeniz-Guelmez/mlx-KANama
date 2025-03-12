@@ -1,0 +1,96 @@
+python -m mlx_kanama.generate
+mlx_kanama.generate
+options:
+  --model = The path to the local model directory or Hugging Face repo. If no model is specified, then mlx-community/Llama-3.2-3B-Instruct-4bit is used.
+  --adapter-path = Optional path for the trained adapter weights and config.
+  --extra-eos-token = [EXTRA_EOS_TOKEN ...] Add tokens in the list of eos tokens that stop generation.
+  --system-prompt = System prompt to be used for the chat template
+  --prompt PROMPT, -p = Message to be processed by the model ('-' reads from stdin)
+  --max-tokens =, -m = Maximum number of tokens to generate
+  --temp = Sampling temperature
+  --top-p = Sampling top-p
+  --min-p = Sampling min-p
+  --min-tokens-to-keep = Minimum tokens to keep for min-p sampling.
+  --seed = seed
+  --ignore-chat-template = Use the raw prompt without the tokenizer's chat template.
+  --use-default-chat-template = Use the default chat template
+  --verbose = Log verbose output when 'True' or 'T' or only print the response when 'False' or 'F'
+  --max-kv-size = Set the maximum key-value cache size
+  --prompt-cache-file = A file containing saved KV caches to avoid recomputing them
+  --kv-bits = Number of bits for KV cache quantization. Defaults to no quantization.
+  --kv-group-size = Group size for KV cache quantization.
+  --quantized-kv-start = When --kv-bits is set, start quantizing the KV cache from this step onwards.
+  --draft-model = A model to be used for speculative decoding.
+  --num-draft-tokens = Number of tokens to draft when using speculative decoding.
+
+
+
+python -m mlx_kanama.lora
+mlx_kanama.lora
+options:
+  -h, --help = show this help message and exit
+  --model = The path to the local model directory or Hugging Face repo.
+  --train = Do training
+  --data = Directory with {train, valid, test}.jsonl files or the name of a Hugging Face dataset (e.g., 'mlx-community/wikisql')
+  --fine-tune-type = Type of fine-tuning to perform: lora, dora, or full.
+  --num-layers = Number of layers to fine-tune. Default is 16, use -1 for all.
+  --batch-size = Minibatch size.
+  --iters = Iterations to train for.
+  --val-batches = Number of validation batches, -1 uses the entire validation set.
+  --learning-rate = Adam learning rate.
+  --steps-per-report = Number of training steps between loss reporting.
+  --steps-per-eval = Number of training steps between validations.
+  --resume-adapter-file = Load path to resume training from the given fine-tuned weights.
+  --adapter-path = Save/load path for the fine-tuned weights.
+  --save-every = Save the model every N iterations.
+  --test = Evaluate on the test set after training
+  --test-batches = Number of test set batches, -1 uses the entire test set.
+  --max-seq-length = Maximum sequence length.
+  -c, --config = A YAML configuration file with the training options
+  --grad-checkpoint = Use gradient checkpointing to reduce memory use.
+  --seed = The PRNG seed
+
+
+python -m mlx_kanama.convert
+mlx_kanama.convert
+options:
+  -h, --help = show this help message and exit
+  --hf-path = Path to the Hugging Face model.
+  --mlx-path = Path to save the MLX model.
+  -q, --quantize = Generate a quantized model.
+  --q-group-size = Group size for quantization.
+  --q-bits = Bits per weight for quantization.
+  --quant-predicate = Mixed-bit quantization recipe. Choices: ['mixed_2_6', 'mixed_3_6']
+  --dtype = Type to save the non-quantized parameters.
+  --upload-repo = The Hugging Face repo to upload the model to.
+  -d, --dequantize = Dequantize a quantized model.
+
+
+
+
+python -m mlx_kanama.lora \
+--model /Users/gokdenizgulmez/Desktop/mlx-KANama/Llama-3.2-1B-Instruct-bf16 \
+--train \
+--data /Users/gokdenizgulmez/Library/Mobile\ Documents/com\~apple\~CloudDocs/Datastes/MLX/R1Preview/custom/small \
+--fine-tune-type lora \
+--num-layers 4 \
+--batch-size 1 \
+--iters 500 \
+--val-batches 1 \
+--steps-per-report 5 \
+--steps-per-eval 5 \
+--adapter-path /Users/gokdenizgulmez/Library/Mobile\ Documents/com\~apple\~CloudDocs/Datastes/MLX/test_wandb \
+--save-every 500 \
+--max-seq-length 128 \
+--grad-checkpoint
+
+
+
+python -m mlx_kanama.generate \
+--model /Users/gokdenizgulmez/Desktop/mlx-KANama/Kan-Llama-3.2-1B-Instruct-bf16 \
+--prompt "Hello World"
+
+
+python -m mlx_kanama.convert \
+--hf-path /Users/gokdenizgulmez/Desktop/mlx-KANama/Llama-3.2-1B-Instruct-bf16 \
+--mlx-path /Users/gokdenizgulmez/Desktop/mlx-KANama/Kan-Llama-3.2-1B-Instruct-bf16

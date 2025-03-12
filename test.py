@@ -1,4 +1,4 @@
-from mlx_kanama.models.llama import Model, ModelArgs
+from mlx_kanama.models.kan_llama import Model, ModelArgs
 
 import mlx.core as mx
 

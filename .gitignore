@@ -1,8 +1,14 @@
 .model/*
 model/*
 
-.dataset*
-dataset*
+.dataset/*
+dataset/*
 
 .Llama*
 Llama*
+
+.Kan_Llama*
+Kan_Llama*
+
+.__pycache__
+__pycache__
