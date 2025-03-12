@@ -1,5 +1,5 @@
-.model*
-model*
+.model/*
+model/*
 
 .dataset*
 dataset*
