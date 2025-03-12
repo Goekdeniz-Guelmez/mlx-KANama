@@ -209,7 +209,7 @@ def main():
         adapter_path=args.adapter_path,
         tokenizer_config=tokenizer_config,
     )
-    print(model)
+
     for eos_token in args.extra_eos_token:
         tokenizer.add_eos_token(eos_token)
 
